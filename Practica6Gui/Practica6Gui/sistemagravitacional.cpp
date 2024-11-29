@@ -24,8 +24,8 @@ void SistemaGravitacional::calcularAceleracion(Cuerpo& cuerpo, int indiceCuerpo)
     double ax = 0, ay = 0;
 
     // Calcular la influencia de cada otro cuerpo
-    for (size_t j = 0; j < cuerpos.size(); ++j) {
-        if (static_cast<size_t>(indiceCuerpo) == j) continue;
+    for (int j = 0; j < cuerpos.size(); ++j) {
+        if (j == indiceCuerpo) continue;
 
         Cuerpo& otroCuerpo = cuerpos[j];
         double r = distancia(cuerpo, otroCuerpo);
@@ -38,8 +38,8 @@ void SistemaGravitacional::calcularAceleracion(Cuerpo& cuerpo, int indiceCuerpo)
     }
 
     // Actualizar velocidad
-    cuerpo.vx +=  ax * dt;
-    cuerpo.vy +=  ay * dt;
+    cuerpo.vx += ax * dt;
+    cuerpo.vy += ay * dt;
 
     // Actualizar posición
     cuerpo.x += cuerpo.vx * dt + 0.5 * ax * dt * dt;
@@ -52,7 +52,7 @@ void SistemaGravitacional::simular() {
     std::vector<Cuerpo> nuevosCuerpos = cuerpos;
 
     // Calcular para cada cuerpo
-    for (size_t i = 0; i < cuerpos.size(); ++i) {
+    for (int i = 0; i < cuerpos.size(); ++i) {
         calcularAceleracion(nuevosCuerpos[i], i);
     }
 
@@ -63,11 +63,13 @@ void SistemaGravitacional::simular() {
 // Guardar resultados en un archivo de texto
 void SistemaGravitacional::guardarEnArchivo(const std::string& nombreArchivo, int pasos) {
     std::ofstream archivoSalida(nombreArchivo);
+
     // Encabezados
-    for (size_t i = 0; i < cuerpos.size(); ++i) {
+    for (int i = 0; i < cuerpos.size(); ++i) {
         archivoSalida << "X" << i+1 << "\t" << "Y" << i+1 << "\t";
     }
     archivoSalida << std::endl;
+
     // Simular y guardar
     for (int paso = 0; paso < pasos; ++paso) {
         for (const auto& cuerpo : cuerpos) {
@@ -77,5 +79,6 @@ void SistemaGravitacional::guardarEnArchivo(const std::string& nombreArchivo, in
         archivoSalida << std::endl;
         simular();
     }
+
     archivoSalida.close();
 }
